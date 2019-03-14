@@ -39,15 +39,25 @@ public class WriteTextActivity extends BaseNfcActivity {
     private Intent intent;
     private String temp = "";
     private String mlogo;   //保存品牌
-    private String mtype;   //保存随机产生的四位随机数
+    private String mtype;   //保存单双证类型
+    private String mGoodsName;//保存物资名称
+    private String mModel;
+    private String mMaterial;
+    private String mSn;
+    private String mManufacturer;
+    private String mProduceDate;
+    private String mTagId;
     private String num_zouyun = "";  //保存发送给服务器的证书
     private String uid_zouyun = ""; //保存发送给服务器的uid；
     private String groupNum = "";//保存双证组号
     private String applyUrl = Constant.URL_ADD_TAG;
     private ParseJson mParseJson = new ParseJson();
-    private boolean isSuccessfullyWritted = false;
     private int publishNum = 0;//发证的次数
     private int maxPublishNum = 0;//最大发证次数
+
+    private boolean aidisSuccessfullyWritted = false;
+    private boolean certiisSuccessfullyWritted = false;
+    private boolean idisSuccessfullyWritted = false;
     private String mUri = "d156000139://\033\001\000\001\000\001\000\001\000\001\000";//aid的uri
 
     Handler mHandler = new Handler() {
@@ -62,26 +72,38 @@ public class WriteTextActivity extends BaseNfcActivity {
                         String message = mParseJson.Json2TaggServer(reponsedata).getMsg();
                         String uid = mParseJson.Json2TaggServer(reponsedata).getTagg().getUid();
                         String certificate = mParseJson.Json2TaggServer(reponsedata).getTagg().getCertificate();
-                        String obflag = mParseJson.Json2TaggServer(reponsedata).getTagg().getObflag();
-                        String brand = mParseJson.Json2TaggServer(reponsedata).getTagg().getBrand();
-                        String group_number = mParseJson.Json2TaggServer(reponsedata).getTagg().getGroup_number();
+                        String goods_name = mParseJson.Json2TaggServer(reponsedata).getTagg().getGoods_name();
+                        String model = mParseJson.Json2TaggServer(reponsedata).getTagg().getModel();
+                        String material = mParseJson.Json2TaggServer(reponsedata).getTagg().getMaterial();
+                        String sn = mParseJson.Json2TaggServer(reponsedata).getTagg().getSn();
+                        String manufacturer = mParseJson.Json2TaggServer(reponsedata).getTagg().getManufacturer();
+                        String produce_date = mParseJson.Json2TaggServer(reponsedata).getTagg().getProduce_date();
                         if (status == 0) {
                             publishNum += 1;
                             Toast.makeText(WriteTextActivity.this, "发证成功", Toast.LENGTH_SHORT).show();
-                            System.out.println("brand is ："
-                                    + brand
+                            System.out.println("goods_name is ："
+                                    + goods_name
                                     + "   "
-                                    + "Group Number is ："
-                                    + group_number
+                                    + "material is : "
+                                    + material
                                     + "    "
+                                    + "model is : "
+                                    + model
+                                    + "  "
+                                    + "sn is : "
+                                    + sn
+                                    + "  "
+                                    + "manufacturer is : "
+                                    + manufacturer
+                                    + " "
+                                    + "produce_date is : "
+                                    + produce_date
+                                    + " "
                                     + "certificate is："
                                     + certificate
                                     + " "
                                     + "uid is ："
-                                    + uid + "    "
-                                    + "  "
-                                    + "obflag is ："
-                                    + obflag
+                                    + uid
                                     +"\n");
                         }
                     } catch (Exception e) {
@@ -102,12 +124,12 @@ public class WriteTextActivity extends BaseNfcActivity {
         setContentView(R.layout.activity_write_text);
         SharedPreferences preferences = getSharedPreferences("info",MODE_PRIVATE);
         maxPublishNum = preferences.getInt("publishNum",0);
-        getGroupNum();
+//        getGroupNum();
     }
     @Override
     public void onNewIntent(Intent intent) {
         if (publishNum >= maxPublishNum) {
-            Toast.makeText(this,"超过最大发证次数限制",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "超过最大发证次数限制", Toast.LENGTH_SHORT).show();
             return;
         }
         getNum();
@@ -116,20 +138,10 @@ public class WriteTextActivity extends BaseNfcActivity {
         //获取Tag对象
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (detectedTag == null) {
-            Toast.makeText(this,"NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测", Toast.LENGTH_SHORT).show();
             return;
         }
         analysisTag(detectedTag);
-
-        //写入NDEF数据(aid)
-        NdefMessage ndefMessage = new NdefMessage(new NdefRecord[]{createUriRecord(mUri)});
-        boolean result = writetag(ndefMessage, detectedTag);
-        if (result) {
-            Toast.makeText(this, "aid写入成功", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "aid写入失败", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         //写非NDEF格式的数据
         String[] techList = detectedTag.getTechList();
@@ -145,16 +157,27 @@ public class WriteTextActivity extends BaseNfcActivity {
             Toast.makeText(this, "不支持MifareUltralight数据格式", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        getDataFromMainActivity();
+        System.out.print("Tagid为：" + mTagId);
+        writeIdInTag(detectedTag,mTagId);
         writeTag(detectedTag, mText);
 
+        if (certiisSuccessfullyWritted) {
+            //写入NDEF数据(aid)
+            NdefMessage ndefMessage = new NdefMessage(new NdefRecord[]{createUriRecord(mUri)});
+            boolean result = writetag(ndefMessage, detectedTag);
+            if (result) {
+                Toast.makeText(this, "aid写入成功", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "aid写入失败", Toast.LENGTH_SHORT).show();
+            }
+        }
 
-        SharedPreferences pref = getSharedPreferences("info", MODE_PRIVATE);
-        mlogo = pref.getString("Name", "");
-        mtype = pref.getString("Type", "");
 
         /** 得到发给服务器的证书号*/
         try {
-            for(int i = 0; i < 4; i++){
+            for (int i = 0; i < 4; i++) {
                 char a = mText.charAt(i);
                 String mstr = "3" + a;
                 num_zouyun = num_zouyun + mstr;
@@ -165,85 +188,21 @@ public class WriteTextActivity extends BaseNfcActivity {
 
         System.out.println("拼接过后的证书为：" + num_zouyun);
         System.out.println("发给服务器的uid为：" + uid_zouyun);
-        System.out.println("品牌为：" + mlogo + "   " + "发证类型为：" + mtype + "    " + "证书为：" + num_zouyun
-                + " " + "uid为：" + uid_zouyun + "    " + "  " + "状态位为：" + temp);
+        System.out.println("物资名称为：" + mGoodsName + "   " + "规格型号为：" + mModel + "    "
+                + "材质为：" + mMaterial + " " + "位号/批号为：" + mSn + " " + "生产厂家为：" + mManufacturer + " " +
+                "生产日期为：" + mProduceDate + " " + "证书为：" + num_zouyun + " " + "uid为：" + uid_zouyun + "    " + "  " + "状态位为：" + temp);
 
-        if((mlogo != "") && (mtype != "") && (maxPublishNum != 0) && (num_zouyun.length() == 8) && (uid_zouyun.length() == 14) && isSuccessfullyWritted)
-        {
-            OkHttp okHttp = new OkHttp(getApplicationContext(),mHandler);
-            /**
-             * 双证网络数据发送
-             */
-            if (mtype.equals("双证")) {
-                System.out.println("Dou-certi group number is " + groupNum);
-                /**
-                 * 双证有状态位网络数据发送
-                 */
-                if (temp != "") {
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("uid",uid_zouyun)
-                            .add("certificate",num_zouyun)
-                            .add("obflag",temp)
-                            .add("brand",mlogo)
-                            .add("group_number",groupNum)
-                            .build();
-                    okHttp.postFromInternet(applyUrl,requestBody);
-                    /**
-                     * 双证无状态位网络数据发送
-                     */
-                } else {
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("uid",uid_zouyun)
-                            .add("certificate",num_zouyun)
-                            .add("brand",mlogo)
-                            .add("group_number",groupNum)
-                            .build();
-                    okHttp.postFromInternet(applyUrl,requestBody);
-                }
-                /**
-                 * 单证网络数据发送
-                 */
-            } else {
-                groupNum = "-1";
-                /**
-                 * 单证有状态位网络数据发送
-                 */
-                if (temp != "") {
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("uid",uid_zouyun)
-                            .add("certificate",num_zouyun)
-                            .add("obflag",temp)
-                            .add("brand",mlogo)
-                            .add("group_number",groupNum)
-                            .build();
-                    okHttp.postFromInternet(applyUrl,requestBody);
-                    /**
-                     * 单证无状态位网络数据发送
-                     */
-                } else {
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("uid",uid_zouyun)
-                            .add("certificate",num_zouyun)
-                            .add("brand",mlogo)
-                            .add("group_number",groupNum)
-                            .build();
-                    okHttp.postFromInternet(applyUrl,requestBody);
-                }
-            }
-        }else{
-            Toast.makeText(WriteTextActivity.this, "请选择品牌,单双证类型", Toast.LENGTH_SHORT).show();
-        }
-
-        num_zouyun = "";
-        uid_zouyun = "";
+        sendingtoServer2();
     }
 
-    /**
-     * 将Uri转成NdefRecord
-     *
-     * @param uriStr
-     * @return
-     */
+
+        /**
+         * 将Uri转成NdefRecord
+         *
+         * @param uriStr
+         * @return
+         */
+
     public static NdefRecord createUriRecord(String uriStr) {
         byte prefix = 0;
         for (Byte b : UriPrefix.URI_PREFIX_MAP.keySet()) {
@@ -277,15 +236,19 @@ public class WriteTextActivity extends BaseNfcActivity {
             if (ndef != null) {
                 ndef.connect();
                 if (!ndef.isWritable()) {
+                    System.out.println("Tag is not writable");
                     return false;
                 }
                 if (ndef.getMaxSize() < size) {
+                    System.out.println("Tag memory is out of size");
                     return false;
                 }
                 ndef.writeNdefMessage(message);
+                System.out.println("aid successfully writted");
                 return true;
             }
         } catch (Exception e) {
+            return false;
         } finally {
             try {
                 ndef.close();
@@ -296,21 +259,44 @@ public class WriteTextActivity extends BaseNfcActivity {
         return false;
     }
 
-    /** 写非ndef格式数据
-     *
+    /**
+     * 写非ndef格式数据
      */
     public void writeTag(Tag tag, String num) {
         MifareUltralight ultralight = MifareUltralight.get(tag);
         try {
             ultralight.connect();
             ultralight.writePage(22, num.getBytes(Charset.forName("US-ASCII")));
-
             System.out.println("非ndef数据写入成功");
-            isSuccessfullyWritted = true;
+            certiisSuccessfullyWritted = true;
         } catch (Exception e) {
             System.out.println("非ndef写入异常");
-            Toast.makeText(this,"NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测",Toast.LENGTH_SHORT).show();
-            isSuccessfullyWritted = false;
+            Toast.makeText(this, "NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测", Toast.LENGTH_SHORT).show();
+            certiisSuccessfullyWritted = false;
+        } finally {
+            try {
+                ultralight.close();
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    public void writeIdInTag(Tag tag, String id) {
+        MifareUltralight ultralight = MifareUltralight.get(tag);
+        try {
+            ultralight.connect();
+            if (id.length() == 1) {
+                id = "0" + "0" + "0" + id;
+            } else if (id.length() == 2) {
+                id = "0" + "0" + id;
+            }
+            ultralight.writePage(20, id.getBytes(Charset.forName("US-ASCII")));
+            System.out.println("标签id写入成功");
+            idisSuccessfullyWritted = true;
+        } catch (Exception e) {
+            System.out.println("标签id写入异常");
+            Toast.makeText(this, "NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测", Toast.LENGTH_SHORT).show();
+            idisSuccessfullyWritted = false;
         } finally {
             try {
                 ultralight.close();
@@ -320,9 +306,9 @@ public class WriteTextActivity extends BaseNfcActivity {
     }
 
 
-
-
-    /** 读uid和状态位*/
+    /**
+     * 读uid和状态位
+     */
     private void analysisTag(Tag tag) {
         String result = "";//uid
         if (tag != null) {
@@ -339,11 +325,11 @@ public class WriteTextActivity extends BaseNfcActivity {
                 }
 
                 /** 得到发给服务器的uid*/
-                for(int i = 0; i < 6; i++){
+                for (int i = 0; i < 6; i++) {
                     char a = result.charAt(i);
                     uid_zouyun = uid_zouyun + a;
                 }
-                for (int i = 8; i < 16; i++){
+                for (int i = 8; i < 16; i++) {
                     char a = result.charAt(i);
                     uid_zouyun = uid_zouyun + a;
                 }
@@ -357,12 +343,12 @@ public class WriteTextActivity extends BaseNfcActivity {
                     move = move >> 1;
                 }
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 boolean isContains = Arrays.asList(Constant.UIDARRAY).contains(uid_zouyun);
                 int postion = 0;
                 int uidCase = 0;
                 if (isContains) {
-                    for (int i = 0;i < Constant.UIDARRAY.length;i++) {
+                    for (int i = 0; i < Constant.UIDARRAY.length; i++) {
                         if (Constant.UIDARRAY[i].equals(uid_zouyun)) {
                             postion = i + 1;
                         }
@@ -482,8 +468,10 @@ public class WriteTextActivity extends BaseNfcActivity {
         }
     }
 
-    /** 产生随机的4位数字证书*/
-    public void getNum(){
+    /**
+     * 产生随机的4位数字证书
+     */
+    public void getNum() {
         int a0, a1, a2, a3;
         a0 = (int) (Math.random() * 10);
         a1 = (int) (Math.random() * 10);
@@ -494,7 +482,7 @@ public class WriteTextActivity extends BaseNfcActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("certi", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("certificate",mText);
+        editor.putString("certificate", mText);
         editor.apply();
 
         System.out.println("随机产生的证书为：" + mText);
@@ -520,4 +508,113 @@ public class WriteTextActivity extends BaseNfcActivity {
 //        editor.putString("group_number",groupNum);
 //        editor.apply();
     }
+
+    public void getDataFromMainActivity() {
+        SharedPreferences pref = getSharedPreferences("info", MODE_PRIVATE);
+        mGoodsName = pref.getString("goods_name", "");
+        mModel = pref.getString("model", "");
+        mMaterial = pref.getString("material", "");
+        mSn = pref.getString("sn", "");
+        mManufacturer = pref.getString("manufacturer", "");
+        mProduceDate = pref.getString("produce_date", "");
+        mTagId = pref.getString("tagid", "");
+    }
+
+//    private void sendingToServer1() {
+//
+//        if ((mlogo != "") && (mtype != "") && (maxPublishNum != 0) && (num_zouyun.length() == 8) &&
+//                (uid_zouyun.length() == 14) && isSuccessfullyWritted) {
+//            OkHttp okHttp = new OkHttp(getApplicationContext(), mHandler);
+//            /**
+//             * 双证网络数据发送
+//             */
+//            if (mtype.equals("双证")) {
+//                System.out.println("Dou-certi group number is " + groupNum);
+//                /**
+//                 * 双证有状态位网络数据发送
+//                 */
+//                if (temp != "") {
+//                    RequestBody requestBody = new FormBody.Builder()
+//                            .add("uid", uid_zouyun)
+//                            .add("certificate", num_zouyun)
+//                            .add("obflag", temp)
+//                            .add("brand", mlogo)
+//                            .add("group_number", groupNum)
+//                            .build();
+//                    okHttp.postFromInternet(applyUrl, requestBody);
+//                    /**
+//                     * 双证无状态位网络数据发送
+//                     */
+//                } else {
+//                    RequestBody requestBody = new FormBody.Builder()
+//                            .add("uid", uid_zouyun)
+//                            .add("certificate", num_zouyun)
+//                            .add("brand", mlogo)
+//                            .add("group_number", groupNum)
+//                            .build();
+//                    okHttp.postFromInternet(applyUrl, requestBody);
+//                }
+//                /**
+//                 * 单证网络数据发送
+//                 */
+//            } else {
+//                groupNum = "-1";
+//                /**
+//                 * 单证有状态位网络数据发送
+//                 */
+//                if (temp != "") {
+//                    RequestBody requestBody = new FormBody.Builder()
+//                            .add("uid", uid_zouyun)
+//                            .add("certificate", num_zouyun)
+//                            .add("obflag", temp)
+//                            .add("brand", mlogo)
+//                            .add("group_number", groupNum)
+//                            .build();
+//                    okHttp.postFromInternet(applyUrl, requestBody);
+//                    /**
+//                     * 单证无状态位网络数据发送
+//                     */
+//                } else {
+//                    RequestBody requestBody = new FormBody.Builder()
+//                            .add("uid", uid_zouyun)
+//                            .add("certificate", num_zouyun)
+//                            .add("brand", mlogo)
+//                            .add("group_number", groupNum)
+//                            .build();
+//                    okHttp.postFromInternet(applyUrl, requestBody);
+//                }
+//            }
+//        } else {
+//            Toast.makeText(WriteTextActivity.this, "请选择品牌,单双证类型", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        num_zouyun = "";
+//        uid_zouyun = "";
+//    }
+
+    public void sendingtoServer2() {
+        if ((mGoodsName != "") && (mModel != "") && (mMaterial != "") && (mSn != "") &&
+                (mManufacturer != "") && (mProduceDate != "") && (maxPublishNum != 0) &&
+                (num_zouyun.length() == 8) && (uid_zouyun.length() == 14) && certiisSuccessfullyWritted) {
+            OkHttp okHttp = new OkHttp(getApplicationContext(), mHandler);
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("uid",uid_zouyun)
+                    .add("certificate",num_zouyun)
+                    .add("goods_name",mGoodsName)
+                    .add("model",mModel)
+                    .add("material",mMaterial)
+                    .add("sn",mSn)
+                    .add("manufacturer",mManufacturer)
+                    .add("produce_date",mProduceDate)
+                    .build();
+            okHttp.postFromInternet(applyUrl,requestBody);
+        } else {
+            Toast.makeText(WriteTextActivity.this, "发证类型缺失", Toast.LENGTH_SHORT).show();
+        }
+        num_zouyun = "";
+        uid_zouyun = "";
+    }
 }
+
+
+

@@ -6,6 +6,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -73,12 +74,18 @@ public class CompareActivity extends BaseNfcActivity {
         }
 
         if (!flag) {
+            String certi116;
             certificate1 = readTag(detectedTag);
-            certi1.setText("证书1为：" + certificate1);
+            certi116 = Integer.toHexString(Integer.parseInt(certificate1));
+            Log.d("certificate:",certi116);
+            certi1.setText("证书1为：" + certi116);
             flag = !flag;
         } else {
+            String certi216;
             certificate2 = readTag(detectedTag);
-            certi2.setText("证书2为：" + certificate2);
+            certi216 = Integer.toHexString(Integer.parseInt(certificate2));
+            Log.d("certificate:",certi216);
+            certi2.setText("证书2为：" + certi216);
             flag = !flag;
         }
 

@@ -10,14 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:id="@+id/tv_select_input"
+            android:id="@+id/tv_select_goodsname"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:drawableRight="@drawable/down2"
             android:gravity="center"
             android:padding="10dp"
             android:textSize="12sp"
-            android:text="品牌"
+            android:text="物资名称"
             android:layout_weight="8"/>
 
         <TextView
@@ -26,7 +26,7 @@
             android:layout_weight="1"/>
 
         <TextView
-            android:id="@+id/tv_select_num"
+            android:id="@+id/tv_select_model"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -34,7 +34,67 @@
             android:layout_weight="8"
             android:padding="10dp"
             android:textSize="12sp"
-            android:text="发证类型"
+            android:text="规格型号"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/tv_select_material"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:drawableRight="@drawable/down2"
+            android:layout_weight="8"
+            android:padding="10dp"
+            android:textSize="12sp"
+            android:text="材质"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/tv_select_sn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:drawableRight="@drawable/down2"
+            android:layout_weight="8"
+            android:padding="10dp"
+            android:textSize="12sp"
+            android:text="位号/批号"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/tv_select_manufacturer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:drawableRight="@drawable/down2"
+            android:layout_weight="8"
+            android:padding="10dp"
+            android:textSize="12sp"
+            android:text="生产厂家"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/tv_select_producedata"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:drawableRight="@drawable/down2"
+            android:layout_weight="8"
+            android:padding="10dp"
+            android:textSize="12sp"
+            android:text="生产日期"
             />
         <TextView
             android:layout_width="0dp"
@@ -62,7 +122,12 @@
             <!--android:layout_height="96dp"-->
             <!--android:src="@drawable/aidpublish"-->
             <!--android:layout_centerInParent="true"/>-->
-        <View
+        <!--<View-->
+            <!--android:id="@+id/center_view"-->
+            <!--android:layout_width="96dp"-->
+            <!--android:layout_height="96dp"-->
+            <!--android:layout_centerInParent="true"/>-->
+        <EditText
             android:id="@+id/center_view"
             android:layout_width="96dp"
             android:layout_height="96dp"
@@ -144,6 +209,5 @@
                 android:gravity="center_horizontal"/>
         </LinearLayout>
     </RelativeLayout>
-
 
 </LinearLayout>
