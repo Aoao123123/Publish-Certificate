@@ -96,38 +96,13 @@
             android:textSize="12sp"
             android:text="生产日期"
             />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-        <TextView
-            android:id="@+id/tv_publish_num"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:drawableRight="@drawable/down2"
-            android:gravity="center"
-            android:padding="10dp"
-            android:textSize="12sp"
-            android:text="发证数量"
-            android:layout_weight="8"/>
 
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!--<ImageView-->
-            <!--android:id="@+id/center_view"-->
-            <!--android:layout_width="96dp"-->
-            <!--android:layout_height="96dp"-->
-            <!--android:src="@drawable/aidpublish"-->
-            <!--android:layout_centerInParent="true"/>-->
-        <!--<View-->
-            <!--android:id="@+id/center_view"-->
-            <!--android:layout_width="96dp"-->
-            <!--android:layout_height="96dp"-->
-            <!--android:layout_centerInParent="true"/>-->
-        <EditText
+        <View
             android:id="@+id/center_view"
             android:layout_width="96dp"
             android:layout_height="96dp"

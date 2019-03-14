@@ -32,8 +32,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
     private TextView mModelTv;//规格型号
     private TextView mSnTv;//位号批号
     private TextView mProduceDateTv;//生产日期
-    private TextView mPublishNum;//发证数量
-    private EditText mTagIdEt;//标签序列号
 
     /**
      * popup窗口里的ListView
@@ -44,7 +42,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
     private ListView mModelLv;//规格型号
     private ListView mSnLv;//位号批号
     private ListView mProduceDateLv;//生产日期
-    private ListView mPublishNumLv;//发证次数
 
     /**
      * popup窗口
@@ -55,7 +52,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
     private PopupWindow modelSelectPopup;
     private PopupWindow snSelectPopup;
     private PopupWindow producedateSelectPopup;
-    private PopupWindow mPublishNumPopup;
 
     /**
      * 模拟的popwindow中各listview中的数据
@@ -66,7 +62,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
     private List<String> testData4;
     private List<String> testData5;
     private List<String> testData6;
-    private List<Integer> testData7;
 
     /**
      * 数据适配器
@@ -77,7 +72,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
     private ArrayAdapter<String> testDataAdapter4;
     private ArrayAdapter<String> testDataAdapter5;
     private ArrayAdapter<String> testDataAdapter6;
-    private ArrayAdapter<Integer> testDataAdapter7;
 
     /**
      * ImageView
@@ -87,11 +81,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
     private ImageView imageView3;   //复制比对
     private ImageView imageView4;   //初始化
 //    private ImageView imageView5;   //aid写入
-
-    /**
-     * 保存随机数
-     */
-    private String passnum = "11111111";
 
     private Intent intent;
 
@@ -104,7 +93,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
     private String mSn;//位号组号
     private String mGoodsName;//物品名称
     private String mProduceDate;//生产日期
-    private int publishNum = 0;//发证次数
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,14 +111,12 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         mSnTv.setText("位号/批号");
         mManufacturerTv.setText("生产厂家");
         mProduceDateTv.setText("生产日期");
-        mPublishNum.setText("发证数量");
         mGoodsName = "";
         mModel = "";
         mMaterial = "";
         mSn = "";
         mManufacturer = "";
         mProduceDate = "";
-        publishNum = 0;
         SharedPreferences sharedPreferences = getSharedPreferences("info", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("goods_name", mGoodsName);
@@ -139,8 +125,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         editor.putString("sn",mSn);
         editor.putString("manufacturer",mManufacturer);
         editor.putString("produce_date",mProduceDate);
-        editor.putString("tagid",mTagIdEt.getText().toString());
-        editor.putInt("publishNum",publishNum);
         editor.apply();
     }
 
@@ -154,8 +138,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         mSnTv = (TextView) findViewById(R.id.tv_select_sn);
         mManufacturerTv = (TextView) findViewById(R.id.tv_select_manufacturer);
         mProduceDateTv = (TextView) findViewById(R.id.tv_select_producedata);
-        mPublishNum = (TextView) findViewById(R.id.tv_publish_num);
-        mTagIdEt = (EditText) findViewById(R.id.center_view);
         imageView1 = (ImageView) findViewById(R.id.my_fa);
         imageView2 = (ImageView) findViewById(R.id.my_copy);
         imageView3 = (ImageView) findViewById(R.id.my_compare);
@@ -173,7 +155,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         mSnTv.setOnClickListener(this);
         mManufacturerTv.setOnClickListener(this);
         mProduceDateTv.setOnClickListener(this);
-        mPublishNum.setOnClickListener(this);
         imageView1.setOnClickListener(this);
         imageView2.setOnClickListener(this);
         imageView3.setOnClickListener(this);
@@ -232,14 +213,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
                     producedateSelectPopup.showAsDropDown(mProduceDateTv, 0, 10);
                 }
                 break;
-            case R.id.tv_publish_num:
-                //点击控件后显示popup窗口
-                iniSelectPopup2();
-                // 使用isShowing()检查popup窗口是否在显示状态
-                if (mPublishNumPopup != null && !mPublishNumPopup.isShowing()) {
-                    mPublishNumPopup.showAsDropDown(mPublishNum, 0, 10);
-                }
-                break;
             case R.id.my_fa:
                 SharedPreferences sharedPreferences = getSharedPreferences("info", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -249,8 +222,6 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
                 editor.putString("sn",mSn);
                 editor.putString("manufacturer",mManufacturer);
                 editor.putString("produce_date",mProduceDate);
-                editor.putString("tagid",mTagIdEt.getText().toString());
-                editor.putInt("publishNum",publishNum);
                 editor.apply();
                 intent = new Intent(MainActivity.this, WriteTextActivity.class);
                 startActivity(intent);
@@ -401,7 +372,7 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         testData3.add("PN40 DN200X25");
         testData3.add("PN40 DN50X5");
         testData3.add("PN40 DN50X25X5");
-        testData3.add("FJ41 Y-class600 1寸");
+        testData3.add("FJ41Y-class600 1寸");
         testData3.add("PN100 DN25");
         testData3.add("BHC-F");
         testData3.add("1/2NPT(M)X1/2NPT(M)");
@@ -571,45 +542,4 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         });
     }
 
-    /**
-     * 初始化发证数量popwindow
-     */
-    private void iniSelectPopup2() {
-        mPublishNumLv = new ListView(this);
-        testData7 = new ArrayList<Integer>();
-        testData7.add(1);
-        testData7.add(2);
-        testData7.add(3);
-        testData7.add(4);
-        testData7.add(5);
-        //设置适配器
-        testDataAdapter7 = new ArrayAdapter<Integer>(this, R.layout.popup_text_item, testData7);
-        mPublishNumLv.setAdapter(testDataAdapter7);
-
-        //设置ListView点击事件
-        mPublishNumLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                // 在这里获取item数据
-                int value = testData7.get(position);
-                // 把选择的数据展示对应的TextView上
-                mPublishNum.setText(value + "");
-                publishNum = value;
-                // 选择完后关闭popup窗口
-                mPublishNumPopup.dismiss();
-            }
-        });
-        mPublishNumPopup = new PopupWindow(mPublishNumLv, mPublishNum.getWidth(), ActionBar.LayoutParams.WRAP_CONTENT, true);
-        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.bg_corner);
-        mPublishNumPopup.setBackgroundDrawable(drawable);
-        mPublishNumPopup.setFocusable(true);
-        mPublishNumPopup.setOutsideTouchable(true);
-        mPublishNumPopup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                //关闭popup窗口
-                mPublishNumPopup.dismiss();
-            }
-        });
-    }
 }

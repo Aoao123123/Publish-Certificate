@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="3">
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -23,11 +23,19 @@
             android:layout_marginTop="20dp"
             android:src="@drawable/zhengshu6"/>
     </LinearLayout>
-    <TextView
+    <EditText
+        android:id="@+id/et_tagtypenum_input"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="1"
-        android:text="请将手机贴近标签，等待弹出提示aid写入成功以及发证成功，则发证完成。\n\n在等待过程中请勿将手机远离NFC标签。\n\n若提示发证失败，请重新尝试。\n\n注意：若没有选择品牌，发证类型以及发证数量，将会导致发证失败。\n\n注意：若选择双证类型，请在发第二次证书之前不要退出该界面"/>
+        android:hint="輸入標籤組號"/>
+    <EditText
+        android:id="@+id/et_tagid_input"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:hint="輸入標籤序號"/>
 
 </LinearLayout>

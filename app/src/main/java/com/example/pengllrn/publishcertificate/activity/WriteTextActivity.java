@@ -13,6 +13,7 @@ import android.nfc.tech.Ndef;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.pengllrn.publishcertificate.R;
@@ -36,29 +37,26 @@ import okhttp3.RequestBody;
 
 public class WriteTextActivity extends BaseNfcActivity {
     private String mText = "";  //保存证书
-    private Intent intent;
     private String temp = "";
-    private String mlogo;   //保存品牌
-    private String mtype;   //保存单双证类型
     private String mGoodsName;//保存物资名称
     private String mModel;
     private String mMaterial;
     private String mSn;
     private String mManufacturer;
     private String mProduceDate;
-    private String mTagId;
     private String num_zouyun = "";  //保存发送给服务器的证书
     private String uid_zouyun = ""; //保存发送给服务器的uid；
-    private String groupNum = "";//保存双证组号
     private String applyUrl = Constant.URL_ADD_TAG;
     private ParseJson mParseJson = new ParseJson();
-    private int publishNum = 0;//发证的次数
-    private int maxPublishNum = 0;//最大发证次数
+
 
     private boolean aidisSuccessfullyWritted = false;
     private boolean certiisSuccessfullyWritted = false;
     private boolean idisSuccessfullyWritted = false;
     private String mUri = "d156000139://\033\001\000\001\000\001\000\001\000\001\000";//aid的uri
+
+    private EditText TagTypeNumEt;
+    private EditText TagIdEt;
 
     Handler mHandler = new Handler() {
         @Override
@@ -69,42 +67,41 @@ public class WriteTextActivity extends BaseNfcActivity {
                     try {
                         String reponsedata = (msg.obj).toString();
                         int status = mParseJson.Json2TaggServer(reponsedata).getStatus();
-                        String message = mParseJson.Json2TaggServer(reponsedata).getMsg();
-                        String uid = mParseJson.Json2TaggServer(reponsedata).getTagg().getUid();
-                        String certificate = mParseJson.Json2TaggServer(reponsedata).getTagg().getCertificate();
-                        String goods_name = mParseJson.Json2TaggServer(reponsedata).getTagg().getGoods_name();
-                        String model = mParseJson.Json2TaggServer(reponsedata).getTagg().getModel();
-                        String material = mParseJson.Json2TaggServer(reponsedata).getTagg().getMaterial();
-                        String sn = mParseJson.Json2TaggServer(reponsedata).getTagg().getSn();
-                        String manufacturer = mParseJson.Json2TaggServer(reponsedata).getTagg().getManufacturer();
-                        String produce_date = mParseJson.Json2TaggServer(reponsedata).getTagg().getProduce_date();
+//                        String message = mParseJson.Json2TaggServer(reponsedata).getMsg();
+//                        String uid = mParseJson.Json2TaggServer(reponsedata).getTagg().getUid();
+//                        String certificate = mParseJson.Json2TaggServer(reponsedata).getTagg().getCertificate();
+//                        String goods_name = mParseJson.Json2TaggServer(reponsedata).getTagg().getGoods_name();
+//                        String model = mParseJson.Json2TaggServer(reponsedata).getTagg().getModel();
+//                        String material = mParseJson.Json2TaggServer(reponsedata).getTagg().getMaterial();
+//                        String sn = mParseJson.Json2TaggServer(reponsedata).getTagg().getSn();
+//                        String manufacturer = mParseJson.Json2TaggServer(reponsedata).getTagg().getManufacturer();
+//                        String produce_date = mParseJson.Json2TaggServer(reponsedata).getTagg().getProduce_date();
                         if (status == 0) {
-                            publishNum += 1;
                             Toast.makeText(WriteTextActivity.this, "发证成功", Toast.LENGTH_SHORT).show();
-                            System.out.println("goods_name is ："
-                                    + goods_name
-                                    + "   "
-                                    + "material is : "
-                                    + material
-                                    + "    "
-                                    + "model is : "
-                                    + model
-                                    + "  "
-                                    + "sn is : "
-                                    + sn
-                                    + "  "
-                                    + "manufacturer is : "
-                                    + manufacturer
-                                    + " "
-                                    + "produce_date is : "
-                                    + produce_date
-                                    + " "
-                                    + "certificate is："
-                                    + certificate
-                                    + " "
-                                    + "uid is ："
-                                    + uid
-                                    +"\n");
+//                            System.out.println("goods_name is ："
+//                                    + goods_name
+//                                    + "   "
+//                                    + "material is : "
+//                                    + material
+//                                    + "    "
+//                                    + "model is : "
+//                                    + model
+//                                    + "  "
+//                                    + "sn is : "
+//                                    + sn
+//                                    + "  "
+//                                    + "manufacturer is : "
+//                                    + manufacturer
+//                                    + " "
+//                                    + "produce_date is : "
+//                                    + produce_date
+//                                    + " "
+//                                    + "certificate is："
+//                                    + certificate
+//                                    + " "
+//                                    + "uid is ："
+//                                    + uid
+//                                    +"\n");
                         }
                     } catch (Exception e) {
                         Toast.makeText(WriteTextActivity.this,"NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测",Toast.LENGTH_SHORT).show();
@@ -122,16 +119,11 @@ public class WriteTextActivity extends BaseNfcActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_text);
-        SharedPreferences preferences = getSharedPreferences("info",MODE_PRIVATE);
-        maxPublishNum = preferences.getInt("publishNum",0);
-//        getGroupNum();
+        TagTypeNumEt = (EditText) findViewById(R.id.et_tagtypenum_input);
+        TagIdEt = (EditText) findViewById(R.id.et_tagid_input);
     }
     @Override
     public void onNewIntent(Intent intent) {
-        if (publishNum >= maxPublishNum) {
-            Toast.makeText(this, "超过最大发证次数限制", Toast.LENGTH_SHORT).show();
-            return;
-        }
         getNum();
         if (mText == null)
             return;
@@ -159,8 +151,8 @@ public class WriteTextActivity extends BaseNfcActivity {
         }
 
         getDataFromMainActivity();
-        System.out.print("Tagid为：" + mTagId);
-        writeIdInTag(detectedTag,mTagId);
+        writeTypeNumInTag(detectedTag,TagTypeNumEt.getText().toString());
+        writeIdInTag(detectedTag,TagIdEt.getText().toString());
         writeTag(detectedTag, mText);
 
         if (certiisSuccessfullyWritted) {
@@ -192,7 +184,7 @@ public class WriteTextActivity extends BaseNfcActivity {
                 + "材质为：" + mMaterial + " " + "位号/批号为：" + mSn + " " + "生产厂家为：" + mManufacturer + " " +
                 "生产日期为：" + mProduceDate + " " + "证书为：" + num_zouyun + " " + "uid为：" + uid_zouyun + "    " + "  " + "状态位为：" + temp);
 
-        sendingtoServer2();
+        sendingtoServer();
     }
 
 
@@ -267,6 +259,30 @@ public class WriteTextActivity extends BaseNfcActivity {
         try {
             ultralight.connect();
             ultralight.writePage(22, num.getBytes(Charset.forName("US-ASCII")));
+            System.out.println("非ndef数据写入成功");
+            certiisSuccessfullyWritted = true;
+        } catch (Exception e) {
+            System.out.println("非ndef写入异常");
+            Toast.makeText(this, "NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测", Toast.LENGTH_SHORT).show();
+            certiisSuccessfullyWritted = false;
+        } finally {
+            try {
+                ultralight.close();
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    public void writeTypeNumInTag(Tag tag, String typenum) {
+        MifareUltralight ultralight = MifareUltralight.get(tag);
+        try {
+            ultralight.connect();
+            if (typenum.length() == 1) {
+                typenum = "0" + "0" + "0" + typenum;
+            } else if (typenum.length() == 2) {
+                typenum = "0" + "0" + typenum;
+            }
+            ultralight.writePage(19, typenum.getBytes(Charset.forName("US-ASCII")));
             System.out.println("非ndef数据写入成功");
             certiisSuccessfullyWritted = true;
         } catch (Exception e) {
@@ -488,27 +504,6 @@ public class WriteTextActivity extends BaseNfcActivity {
         System.out.println("随机产生的证书为：" + mText);
     }
 
-    public void getGroupNum() {
-        int a0, a1, a2, a3, a4, a5, a6, a7;
-        a0 = (int) (Math.random() * 10);
-        a1 = (int) (Math.random() * 10);
-        a2 = (int) (Math.random() * 10);
-        a3 = (int) (Math.random() * 10);
-        a4 = (int) (Math.random() * 10);
-        a5 = (int) (Math.random() * 10);
-        a6 = (int) (Math.random() * 10);
-        a7 = (int) (Math.random() * 10);
-
-        groupNum = Integer.toString(a0) + Integer.toString(a1) + Integer.toString(a2) +
-                Integer.toString(a3) + Integer.toString(a4) + Integer.toString(a5) +
-                Integer.toString(a6) + Integer.toString(a7);
-
-//        SharedPreferences sharedPreferences = getSharedPreferences("groupnumber", MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.putString("group_number",groupNum);
-//        editor.apply();
-    }
-
     public void getDataFromMainActivity() {
         SharedPreferences pref = getSharedPreferences("info", MODE_PRIVATE);
         mGoodsName = pref.getString("goods_name", "");
@@ -517,85 +512,21 @@ public class WriteTextActivity extends BaseNfcActivity {
         mSn = pref.getString("sn", "");
         mManufacturer = pref.getString("manufacturer", "");
         mProduceDate = pref.getString("produce_date", "");
-        mTagId = pref.getString("tagid", "");
+        if (mModel.equals("")) {
+            mModel = "No model";
+        }
+        if (mMaterial.equals("")) {
+            mMaterial = "No material";
+        }
+        if (mSn.equals("")) {
+            mSn = "No sn";
+        }
     }
 
-//    private void sendingToServer1() {
-//
-//        if ((mlogo != "") && (mtype != "") && (maxPublishNum != 0) && (num_zouyun.length() == 8) &&
-//                (uid_zouyun.length() == 14) && isSuccessfullyWritted) {
-//            OkHttp okHttp = new OkHttp(getApplicationContext(), mHandler);
-//            /**
-//             * 双证网络数据发送
-//             */
-//            if (mtype.equals("双证")) {
-//                System.out.println("Dou-certi group number is " + groupNum);
-//                /**
-//                 * 双证有状态位网络数据发送
-//                 */
-//                if (temp != "") {
-//                    RequestBody requestBody = new FormBody.Builder()
-//                            .add("uid", uid_zouyun)
-//                            .add("certificate", num_zouyun)
-//                            .add("obflag", temp)
-//                            .add("brand", mlogo)
-//                            .add("group_number", groupNum)
-//                            .build();
-//                    okHttp.postFromInternet(applyUrl, requestBody);
-//                    /**
-//                     * 双证无状态位网络数据发送
-//                     */
-//                } else {
-//                    RequestBody requestBody = new FormBody.Builder()
-//                            .add("uid", uid_zouyun)
-//                            .add("certificate", num_zouyun)
-//                            .add("brand", mlogo)
-//                            .add("group_number", groupNum)
-//                            .build();
-//                    okHttp.postFromInternet(applyUrl, requestBody);
-//                }
-//                /**
-//                 * 单证网络数据发送
-//                 */
-//            } else {
-//                groupNum = "-1";
-//                /**
-//                 * 单证有状态位网络数据发送
-//                 */
-//                if (temp != "") {
-//                    RequestBody requestBody = new FormBody.Builder()
-//                            .add("uid", uid_zouyun)
-//                            .add("certificate", num_zouyun)
-//                            .add("obflag", temp)
-//                            .add("brand", mlogo)
-//                            .add("group_number", groupNum)
-//                            .build();
-//                    okHttp.postFromInternet(applyUrl, requestBody);
-//                    /**
-//                     * 单证无状态位网络数据发送
-//                     */
-//                } else {
-//                    RequestBody requestBody = new FormBody.Builder()
-//                            .add("uid", uid_zouyun)
-//                            .add("certificate", num_zouyun)
-//                            .add("brand", mlogo)
-//                            .add("group_number", groupNum)
-//                            .build();
-//                    okHttp.postFromInternet(applyUrl, requestBody);
-//                }
-//            }
-//        } else {
-//            Toast.makeText(WriteTextActivity.this, "请选择品牌,单双证类型", Toast.LENGTH_SHORT).show();
-//        }
-//
-//        num_zouyun = "";
-//        uid_zouyun = "";
-//    }
-
-    public void sendingtoServer2() {
-        if ((mGoodsName != "") && (mModel != "") && (mMaterial != "") && (mSn != "") &&
-                (mManufacturer != "") && (mProduceDate != "") && (maxPublishNum != 0) &&
-                (num_zouyun.length() == 8) && (uid_zouyun.length() == 14) && certiisSuccessfullyWritted) {
+    public void sendingtoServer() {
+        if ((mGoodsName != "") && (mManufacturer != "") && (mProduceDate != "")
+                && (num_zouyun.length() == 8) && (uid_zouyun.length() == 14)
+                && certiisSuccessfullyWritted) {
             OkHttp okHttp = new OkHttp(getApplicationContext(), mHandler);
             RequestBody requestBody = new FormBody.Builder()
                     .add("uid",uid_zouyun)
