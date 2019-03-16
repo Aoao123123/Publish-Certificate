@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.pengllrn.publishcertificate.activity.CopyActivity"
+    android:weightSum="1">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.69">
+
+        <ImageView
+            android:id="@+id/iv_copy_tag"
+            android:layout_width="124dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_weight="3.50"
+            android:background="@drawable/copy_paste_bg" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:text="复制"
+            android:layout_gravity="center" />
+
+        <ImageView
+            android:id="@+id/iv_paste_tag"
+            android:layout_width="124dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_weight="3.50"
+            android:background="@drawable/copy_paste_bg" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:text="粘贴"
+            android:layout_gravity="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.28">
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="请将手机贴近标签，等待提示发证成功。若提示发证失败，请重新尝试。" />
+    </LinearLayout>
+
+
+</LinearLayout>
