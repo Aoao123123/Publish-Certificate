@@ -16,9 +16,13 @@ public class Constant {
      */
     public static final String URL_ADD_TAG = SERVER_URL + "function/add_tag";
     /**
-     * 发证次数限制
+     * 入库标识
      */
-    public static final int MAX_PUBLISH_NUM = 2;
+    public static final String INSTORAGE = "1";
+    /**
+     * 出库标识
+     */
+    public static final String OUTSTORAGE = "0";
     /**
      * 存在状态位的软标签uid
      */

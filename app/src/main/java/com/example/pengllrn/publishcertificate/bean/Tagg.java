@@ -11,6 +11,7 @@ public class Tagg {
     private String obflag;
     private String brand;
     private String group_number;
+    private String in_storage;
 
     public String getUid() {
         return uid;
@@ -30,5 +31,9 @@ public class Tagg {
 
     public String getGroup_number() {
         return group_number;
+    }
+
+    public String getIn_storage() {
+        return in_storage;
     }
 }
