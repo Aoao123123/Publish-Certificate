@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">出库入库</string>
+    <string name="app_name">物装智能仓库</string>
     <string name="title_activity_initialization">InitializationActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->

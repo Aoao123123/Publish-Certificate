@@ -26,7 +26,7 @@
             android:layout_marginLeft="15dp"
             android:layout_gravity="center_vertical"
             android:textSize="15dp"
-            android:text="已出货"/>
+            android:text="请将手机NFC区域靠近物品标签"/>
     </LinearLayout>
 
     <View
@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="2019.01.01"/>
+                android:text="请将手机NFC区域靠近标签以扫描出出货或者入货时间"/>
             <TextView
                 android:id="@+id/tv_storage_status2"
                 android:layout_width="wrap_content"

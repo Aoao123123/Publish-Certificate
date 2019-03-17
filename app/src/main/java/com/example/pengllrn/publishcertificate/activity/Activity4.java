@@ -44,8 +44,8 @@ public class Activity4 extends BaseNfcActivity {
                         String reponsedata = (msg.obj).toString();
                         int status = mParseJson.Json2TaggServer(reponsedata).getStatus();
                         if (status == 0) {
+                            Toast.makeText(Activity4.this,"扫描成功",Toast.LENGTH_SHORT).show();
                             String in_storage = mParseJson.Json2TaggServer(reponsedata).getTagg().getIn_storage();
-
                             if (in_storage.equals("0")) {
                                 String date_out_storage = mParseJson.Json2TaggServer(reponsedata).getTagg().getDate_out_storage();
                                 storageStatusTv.setText("已出库");
@@ -61,6 +61,7 @@ public class Activity4 extends BaseNfcActivity {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        Toast.makeText(Activity4.this,"扫描失败，请重新扫描",Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case 0x22:
