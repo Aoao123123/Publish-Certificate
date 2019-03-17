@@ -4,36 +4,67 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pengllrn.publishcertificate.R;
 import com.example.pengllrn.publishcertificate.base.BaseNfcActivity;
 import com.example.pengllrn.publishcertificate.constant.Constant;
+import com.example.pengllrn.publishcertificate.gson.ParseJson;
+import com.example.pengllrn.publishcertificate.internet.OkHttp;
 
 import java.io.IOException;
 import java.util.Arrays;
 
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
+
 public class Activity2 extends BaseNfcActivity {
 
     private String certificate1 = ""; //证书
-    private String certificate2 = "";
-    private TextView certi1;
-    private TextView certi2;
-    private TextView compareResult;
-    private Button dataClear;
-    //    private boolean flag = false;
     private String temp = "";   //保存状态位
     private String uid_zouyun = ""; //保存uid
+    private String applyUrl = Constant.URL_ADD_TAG;
+    private ParseJson mParseJson = new ParseJson();
+    private EditText inStorageDateEt;
+
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0x2017:
+                    try {
+                        String reponsedata = (msg.obj).toString();
+                        int status = mParseJson.Json2TaggServer(reponsedata).getStatus();
+                        if (status == 0) {
+                            String in_storage = mParseJson.Json2TaggServer(reponsedata).getTagg().getIn_storage();
+                            if (in_storage.equals("1")) {
+                                Toast.makeText(Activity2.this,"入库成功",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(Activity2.this,"入库失败",Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case 0x22:
+                    Toast.makeText(Activity2.this,"NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测",Toast.LENGTH_SHORT).show();
+            }
+            super.handleMessage(msg);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_1);
-
+        setContentView(R.layout.activity_2);
+        inStorageDateEt = (EditText) findViewById(R.id.et_date);
     }
 
     @Override
@@ -58,9 +89,10 @@ public class Activity2 extends BaseNfcActivity {
             Toast.makeText(this, "不支持MifareUltralight数据格式", Toast.LENGTH_SHORT).show();
             return;
         }
-        certificate1 = readTag(detectedTag);
+        certificate1 = readCertiInTag(detectedTag);
         analysisTag(detectedTag);
         System.out.println("证书：" + certificate1 + "     " + "uid: " + uid_zouyun);
+        sendtoServer();
     }
 
 
@@ -70,7 +102,7 @@ public class Activity2 extends BaseNfcActivity {
      *
      * @param tag
      */
-    public String readTag(Tag tag) {
+    public String readCertiInTag(Tag tag) {
         MifareUltralight ultralight = MifareUltralight.get(tag);
         String certificate = "";
         String temp = "";
@@ -259,5 +291,22 @@ public class Activity2 extends BaseNfcActivity {
             System.out.println("uid为：" + result);
             System.out.println("状态位为：" + temp);
         }
+    }
+
+    public void sendtoServer() {
+        if ((certificate1.length() == 8) && (uid_zouyun.length() == 14) && ((inStorageDateEt.getText().toString()).length() == 10)) {
+            OkHttp okHttp = new OkHttp(getApplicationContext(),mHandler);
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("uid",uid_zouyun)
+                    .add("certificate",certificate1)
+                    .add("in_storage",Constant.INSTORAGE)
+                    .add("date_in_storage",inStorageDateEt.getText().toString())
+                    .build();
+            okHttp.postFromInternet(applyUrl,requestBody);
+        } else {
+            Toast.makeText(this,"请填入正确的年月日格式",Toast.LENGTH_SHORT).show();
+        }
+        uid_zouyun = "";
+        certificate1 = "";
     }
 }

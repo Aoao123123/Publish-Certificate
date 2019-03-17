@@ -16,6 +16,14 @@ public class Constant {
      */
     public static final String URL_ADD_TAG = SERVER_URL + "function/add_tag";
     /**
+     * 盘点库中标签
+     */
+    public static final String URL_CHECK_IN_STORAGE = SERVER_URL + "function/check_storage";
+    /**
+     * 验证标签
+     */
+    public static final String URL_TAG_VALIDATE = SERVER_URL + "validate";
+    /**
      * 入库标识
      */
     public static final String INSTORAGE = "1";

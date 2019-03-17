@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.pengllrn.publishcertificate.activity.Activity2">
+    android:orientation="vertical"
+    tools:context="com.example.pengllrn.publishcertificate.activity.Activity1">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="请输入入库日期，格式：2019.01.01"
+        android:textSize="24dp"/>
+    <EditText
+        android:id="@+id/et_date"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="请输入入库日期，格式：2019.01.01"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:text="请在上方按指定格式输入入库的年月日时间，然后将手机靠近标签，等待提示入库成功。\n\n在提示成功之前，请勿将手机拿离标签，否则将导致入库失败。"/>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
+

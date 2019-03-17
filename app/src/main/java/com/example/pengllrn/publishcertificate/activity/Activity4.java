@@ -8,9 +8,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,14 +23,17 @@ import java.util.Arrays;
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
 
-public class Activity1 extends BaseNfcActivity {
+public class Activity4 extends BaseNfcActivity {
 
     private String certificate1 = ""; //证书
     private String temp = "";   //保存状态位
     private String uid_zouyun = ""; //保存uid
     private String applyUrl = Constant.URL_ADD_TAG;
     private ParseJson mParseJson = new ParseJson();
-    private EditText outStorageDateEt;
+    private TextView storageStatusTv;
+    private TextView storageStatusTv2;
+    private TextView storageTimeTv;
+
 
     Handler mHandler = new Handler() {
         @Override
@@ -45,17 +45,26 @@ public class Activity1 extends BaseNfcActivity {
                         int status = mParseJson.Json2TaggServer(reponsedata).getStatus();
                         if (status == 0) {
                             String in_storage = mParseJson.Json2TaggServer(reponsedata).getTagg().getIn_storage();
+
                             if (in_storage.equals("0")) {
-                                Toast.makeText(Activity1.this,"出库成功",Toast.LENGTH_SHORT).show();
+                                String date_out_storage = mParseJson.Json2TaggServer(reponsedata).getTagg().getDate_out_storage();
+                                storageStatusTv.setText("已出库");
+                                storageStatusTv2.setText("出库");
+                                storageTimeTv.setText(date_out_storage);
+                            }
+                            if (in_storage.equals("1")) {
+                                String date_in_storage = mParseJson.Json2TaggServer(reponsedata).getTagg().getDate_in_storage();
+                                storageStatusTv.setText("已入库");
+                                storageStatusTv2.setText("入库");
+                                storageTimeTv.setText(date_in_storage);
                             }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Toast.makeText(Activity1.this,"出库失败",Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case 0x22:
-                    Toast.makeText(Activity1.this,"NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Activity4.this,"NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测",Toast.LENGTH_SHORT).show();
             }
             super.handleMessage(msg);
         }
@@ -64,8 +73,10 @@ public class Activity1 extends BaseNfcActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_1);
-        outStorageDateEt = (EditText) findViewById(R.id.et_date);
+        setContentView(R.layout.activity_4);
+        storageStatusTv = (TextView) findViewById(R.id.tv_storage_status);
+        storageStatusTv2 = (TextView) findViewById(R.id.tv_storage_status2);
+        storageTimeTv = (TextView) findViewById(R.id.tv_storage_time);
     }
 
     @Override
@@ -95,8 +106,6 @@ public class Activity1 extends BaseNfcActivity {
         sendtoServer();
     }
 
-
-
     /**
      * 读取非ndef数据
      *
@@ -120,7 +129,7 @@ public class Activity1 extends BaseNfcActivity {
                 return certificate;
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(Activity1.this,"NFC标签数据未读取成功，请将标签靠近手机NFC检测区域再次读取",Toast.LENGTH_SHORT).show();
+                Toast.makeText(Activity4.this,"NFC标签数据未读取成功，请将标签靠近手机NFC检测区域再次读取",Toast.LENGTH_SHORT).show();
             } finally {
                 try {
                     ultralight.close();
@@ -294,17 +303,13 @@ public class Activity1 extends BaseNfcActivity {
     }
 
     public void sendtoServer() {
-        if ((certificate1.length() == 8) && (uid_zouyun.length() == 14) && ((outStorageDateEt.getText().toString()).length() == 10)) {
+        if ((certificate1.length() == 8) && (uid_zouyun.length() == 14) ) {
             OkHttp okHttp = new OkHttp(getApplicationContext(),mHandler);
             RequestBody requestBody = new FormBody.Builder()
                     .add("uid",uid_zouyun)
                     .add("certificate",certificate1)
-                    .add("in_storage",Constant.OUTSTORAGE)
-                    .add("date_out_storage",outStorageDateEt.getText().toString())
                     .build();
             okHttp.postFromInternet(applyUrl,requestBody);
-        } else {
-            Toast.makeText(this,"请填入正确的年月日格式",Toast.LENGTH_SHORT).show();
         }
         uid_zouyun = "";
         certificate1 = "";

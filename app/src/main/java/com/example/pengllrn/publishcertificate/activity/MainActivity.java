@@ -30,6 +30,7 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
     private ImageView imageView1;   //出库
     private ImageView imageView2;   //入库
     private ImageView imageView3;   //盘库
+    private ImageView imageView4;   //出入库时间记录
 
 
     private Intent intent;
@@ -65,6 +66,7 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         imageView1 = (ImageView) findViewById(R.id.img1);
         imageView2 = (ImageView) findViewById(R.id.img2);
         imageView3 = (ImageView) findViewById(R.id.img3);
+        imageView4 = (ImageView) findViewById(R.id.img4);
     }
 
     /**
@@ -75,6 +77,7 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         imageView1.setOnClickListener(this);
         imageView2.setOnClickListener(this);
         imageView3.setOnClickListener(this);
+        imageView4.setOnClickListener(this);
     }
 
     @Override
@@ -92,6 +95,9 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
                 intent = new Intent(MainActivity.this, Activity3.class);
                 startActivity(intent);
                 break;
+            case R.id.img4:
+                intent = new Intent(MainActivity.this, Activity4.class);
+                startActivity(intent);
             default:
                 break;
         }

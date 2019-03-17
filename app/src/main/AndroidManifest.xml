@@ -43,12 +43,19 @@
         <activity
             android:name=".activity.AidPublishActivity"
             android:launchMode="singleTop" />
-        <activity android:name=".activity.Activity1"
-            android:launchMode="singleTop"/>
-        <activity android:name=".activity.Activity2"
-            android:launchMode="singleTop"/>
-        <activity android:name=".activity.Activity3"
-            android:launchMode="singleTop"></activity>
+        <activity
+            android:name=".activity.Activity1"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".activity.Activity2"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".activity.Activity3"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".activity.Activity4"
+            android:launchMode="singleTop">
+        </activity>
     </application>
 
 </manifest>
