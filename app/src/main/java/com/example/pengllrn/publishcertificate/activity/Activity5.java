@@ -1,39 +1,27 @@
 package com.example.pengllrn.publishcertificate.activity;
 
-import android.content.Intent;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.nfc.tech.MifareUltralight;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pengllrn.publishcertificate.Adapter.CheckAllTagStorageTimeAdapter;
 import com.example.pengllrn.publishcertificate.Adapter.TaggAdapter;
 import com.example.pengllrn.publishcertificate.R;
-import com.example.pengllrn.publishcertificate.base.BaseNfcActivity;
 import com.example.pengllrn.publishcertificate.bean.Tagg;
 import com.example.pengllrn.publishcertificate.constant.Constant;
 import com.example.pengllrn.publishcertificate.gson.ParseJson;
 import com.example.pengllrn.publishcertificate.internet.OkHttp;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
-import okhttp3.FormBody;
-import okhttp3.RequestBody;
+public class Activity5 extends AppCompatActivity {
 
-public class Activity3 extends AppCompatActivity {
-
-    private String applyUrl = Constant.URL_CHECK_IN_STORAGE;
+    private String applyUrl = Constant.URL_ALL_TAG;
     private ParseJson mParseJson = new ParseJson();
-    private ListView tagInStorageLv;
+    private ListView allTagStorageTimeLv;
 
     Handler mHandler = new Handler() {
         @Override
@@ -41,17 +29,17 @@ public class Activity3 extends AppCompatActivity {
             switch (msg.what) {
                 case 0x2020:
                     try {
-                        String responsedata = (msg.obj).toString();
-                        List<Tagg> listtaginstorage = mParseJson.TaggPoint(responsedata);
-                        if (listtaginstorage != null) {
-                            tagInStorageLv.setAdapter(new TaggAdapter(Activity3.this,listtaginstorage,R.layout.base_list_item));
+                        String reponsedata = (msg.obj).toString();
+                        List<Tagg> listTagHaveStorageTime = mParseJson.TaggCheckStorageTimePoint(reponsedata);
+                        if (listTagHaveStorageTime != null) {
+                            allTagStorageTimeLv.setAdapter(new CheckAllTagStorageTimeAdapter(Activity5.this,listTagHaveStorageTime,R.layout.base_list_item2));
                         }
                     } catch (Exception e) {
-                      e.printStackTrace();
+                        e.printStackTrace();
                     }
                     break;
                 case 0x22:
-                    Toast.makeText(Activity3.this,"网络延迟",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Activity5.this,"网络延迟",Toast.LENGTH_SHORT).show();
                     break;
             }
             super.handleMessage(msg);
@@ -61,12 +49,12 @@ public class Activity3 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_3);
-        tagInStorageLv = (ListView) findViewById(R.id.lv_tag_in_storage);
-        sendtoServer();
+        setContentView(R.layout.activity_5);
+        allTagStorageTimeLv = (ListView) findViewById(R.id.lv_all_tag_storage_time);
+        sendingtoServer();
     }
 
-    public void sendtoServer() {
+    public void sendingtoServer() {
         OkHttp okHttp = new OkHttp(getApplicationContext(),mHandler);
         okHttp.getFromInternet(applyUrl);
     }

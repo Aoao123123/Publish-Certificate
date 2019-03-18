@@ -24,6 +24,7 @@ import okhttp3.Response;
 
 public class OkHttp {
     public final int POSTOK = 0x2017;
+    public final int POSTOK2 = 0x2018;
     public final int GETOK = 0x2020;
     public final int GETIMGOK = 0x2030;
     public final int WRANG = 0x22;
@@ -221,6 +222,43 @@ public class OkHttp {
                         String responseData = response.body().string();
                         Message msg = new Message();
                         msg.what = POSTOK;
+                        msg.obj = responseData;
+                        handler.sendMessage(msg);
+                        System.out.println("Connected");
+                    } else {
+                        //TODO 错误报告
+                        Message msg = new Message();
+                        msg.what = WRANG;
+                        handler.sendMessage(msg);
+                        System.out.println("Not response");
+                    }
+                } catch (IOException e) {
+                    Message msg = new Message();
+                    msg.what = EXCEPTION;
+                    handler.sendMessage(msg);
+                    e.printStackTrace();
+                    System.out.println("Error");
+                }
+            }
+        }).start();
+    }
+
+    public void postFromInternet2(final String path, final RequestBody requestBody) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OkHttpClient client = new OkHttpClient();
+                    //用post提交键值对格式的数据
+                    Request request = new Request.Builder()
+                            .url(path)
+                            .post(requestBody)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        String responseData = response.body().string();
+                        Message msg = new Message();
+                        msg.what = POSTOK2;
                         msg.obj = responseData;
                         handler.sendMessage(msg);
                         System.out.println("Connected");

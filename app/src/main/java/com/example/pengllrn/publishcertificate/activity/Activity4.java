@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ public class Activity4 extends BaseNfcActivity {
     private TextView storageStatusTv;
     private TextView storageStatusTv2;
     private TextView storageTimeTv;
+    private TextView titleTv;
 
 
     Handler mHandler = new Handler() {
@@ -49,14 +51,22 @@ public class Activity4 extends BaseNfcActivity {
                             if (in_storage.equals("0")) {
                                 String date_out_storage = mParseJson.Json2TaggServer(reponsedata).getTagg().getDate_out_storage();
                                 storageStatusTv.setText("已出库");
+                                titleTv.setText("该物品于：");
                                 storageStatusTv2.setText("出库");
                                 storageTimeTv.setText(date_out_storage);
                             }
                             if (in_storage.equals("1")) {
                                 String date_in_storage = mParseJson.Json2TaggServer(reponsedata).getTagg().getDate_in_storage();
                                 storageStatusTv.setText("已入库");
+                                titleTv.setText("该物品于：");
                                 storageStatusTv2.setText("入库");
                                 storageTimeTv.setText(date_in_storage);
+                            }
+                            if (in_storage.equals("-1")) {
+                                storageStatusTv.setText("还未入库");
+                                titleTv.setText("该物品还未进行入库操作");
+                                storageTimeTv.setText("");
+                                storageStatusTv2.setText("");
                             }
                         }
                     } catch (Exception e) {
@@ -65,7 +75,8 @@ public class Activity4 extends BaseNfcActivity {
                     }
                     break;
                 case 0x22:
-                    Toast.makeText(Activity4.this,"NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Activity4.this,"网络延迟",Toast.LENGTH_SHORT).show();
+                    break;
             }
             super.handleMessage(msg);
         }
@@ -78,6 +89,7 @@ public class Activity4 extends BaseNfcActivity {
         storageStatusTv = (TextView) findViewById(R.id.tv_storage_status);
         storageStatusTv2 = (TextView) findViewById(R.id.tv_storage_status2);
         storageTimeTv = (TextView) findViewById(R.id.tv_storage_time);
+        titleTv = (TextView) findViewById(R.id.tv_title);
     }
 
     @Override

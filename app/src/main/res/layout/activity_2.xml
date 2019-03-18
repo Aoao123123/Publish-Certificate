@@ -13,31 +13,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="入库时间"
-            android:textSize="15dp"
+            android:text="入库"
+            android:textSize="24dp"
             android:layout_marginTop="15dp"
             android:layout_marginLeft="15dp"
             android:layout_marginBottom="15dp"/>
     </LinearLayout>
 
-    <LinearLayout
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="请输入入库日期（格式：2019.01.01）："
-            android:textSize="15dp"
-            android:layout_marginLeft="15dp"/>
-        <EditText
-            android:id="@+id/et_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textSize="15dp"
-            android:layout_weight="3.80" />
-    </LinearLayout>
+        android:src="@drawable/zhengshu6"
+        android:layout_gravity="center"/>
 
     <View
         android:layout_width="match_parent"
@@ -53,6 +40,6 @@
         android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:text="请在上方按指定格式输入入库的年月日时间，然后将手机靠近标签，等待提示入库成功。\n\n在提示成功之前，请勿将手机拿离标签，否则将导致入库失败。"/>
+        android:text="请将手机靠近标签，等待提示入库成功。\n\n在提示成功之前，请勿将手机拿离标签，否则将导致入库失败。"/>
 
 </LinearLayout>

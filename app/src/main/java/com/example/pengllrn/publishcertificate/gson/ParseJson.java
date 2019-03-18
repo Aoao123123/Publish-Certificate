@@ -44,4 +44,31 @@ public class ParseJson {
         }
         return listTaggInStorage;
     }
+
+    public List<Tagg> TaggCheckStorageTimePoint(String json) {
+        List<Tagg> listTaggsHaveStorageTime = new ArrayList<Tagg>();
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray alltaginstorageArray = jsonObject.getJSONArray("tags");
+            for (int i = 0;i <alltaginstorageArray.length();i++) {
+                JSONObject jObject = alltaginstorageArray.getJSONObject(i);
+                if (jObject.has("date_in_storage")) {
+                    String uid = jObject.getString("uid");
+                    String certificate = jObject.getString("certificate");
+                    String goods_name = jObject.getString("goods_name");
+                    String date_in_storage = jObject.getString("date_in_storage");
+                    String date_out_storage;
+                    if (jObject.has("date_out_storage")) {
+                        date_out_storage = jObject.getString("date_out_storage");
+                    } else {
+                        date_out_storage = "";
+                    }
+                    listTaggsHaveStorageTime.add(new Tagg(uid,certificate,goods_name,date_in_storage,date_out_storage));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listTaggsHaveStorageTime;
+    }
 }

@@ -24,6 +24,10 @@ public class Constant {
      */
     public static final String URL_TAG_VALIDATE = SERVER_URL + "validate";
     /**
+     * 获取全部标签
+     */
+    public static final String URL_ALL_TAG = SERVER_URL + "function/all_tags";
+    /**
      * 入库标识
      */
     public static final String INSTORAGE = "1";

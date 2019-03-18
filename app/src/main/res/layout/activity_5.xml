@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.pengllrn.publishcertificate.activity.Activity3"
+    tools:context="com.example.pengllrn.publishcertificate.activity.Activity5"
     android:weightSum="1">
 
     <LinearLayout
@@ -16,12 +16,12 @@
         <TextView
             android:id="@+id/text1"
             android:layout_width="0dp"
-            android:layout_weight="2"
+            android:layout_weight="4"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="物资名称"
-            android:textSize="10sp"
-            android:layout_marginLeft="12dp"/>
+            android:textSize="12sp"
+            android:layout_marginLeft="5dp"/>
         <View
             android:layout_width="0.5dp"
             android:layout_height="match_parent"
@@ -29,10 +29,10 @@
         <TextView
             android:id="@+id/text2"
             android:layout_width="0dp"
-            android:layout_weight="4"
+            android:layout_weight="3"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="型号"
+            android:text="物资id"
             android:textSize="12sp"/>
         <View
             android:layout_width="0.5dp"
@@ -44,7 +44,7 @@
             android:layout_weight="3"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="材质"
+            android:text="入库时间"
             android:textSize="12sp"/>
         <View
             android:layout_width="0.5dp"
@@ -53,35 +53,15 @@
         <TextView
             android:id="@+id/text4"
             android:layout_width="0dp"
-            android:layout_weight="4"
+            android:layout_weight="3"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="位号/批号"
+            android:text="出库时间"
             android:textSize="12sp"/>
         <View
             android:layout_width="0.5dp"
             android:layout_height="match_parent"
-            android:layout_margin="8dp" />
-        <TextView
-            android:id="@+id/text5"
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="生产厂家"
-            android:textSize="12sp"/>
-        <View
-            android:layout_width="0.5dp"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp" />
-        <TextView
-            android:id="@+id/text6"
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="生产日期"
-            android:textSize="12sp"/>
+            android:layout_margin="8dp" />>
     </LinearLayout>
 
     <View
@@ -96,10 +76,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ListView
-            android:id="@+id/lv_tag_in_storage"
+            android:id="@+id/lv_all_tag_storage_time"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         </ListView>
     </LinearLayout>
+
 
 </LinearLayout>

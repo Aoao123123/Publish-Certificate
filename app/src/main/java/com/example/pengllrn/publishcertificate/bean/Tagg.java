@@ -18,8 +18,8 @@ public class Tagg {
     private String manufacturer;
     private String produce_date;
     private String in_storage;
-    private String date_out_storage;
-    private String date_in_storage;
+    private String date_out_storage = "";
+    private String date_in_storage = "";
 
     public Tagg(String uid, String certificate, String goods_name, String material, String model, String sn, String manufacturer, String produce_date) {
         this.uid = uid;
@@ -30,6 +30,14 @@ public class Tagg {
         this.sn = sn;
         this.manufacturer = manufacturer;
         this.produce_date = produce_date;
+    }
+
+    public Tagg(String uid, String certificate,String goods_name, String date_in_storage, String date_out_storage) {
+        this.uid = uid;
+        this.certificate = certificate;
+        this.goods_name = goods_name;
+        this.date_in_storage = date_in_storage;
+        this.date_out_storage = date_out_storage;
     }
 
     public String getUid() {

@@ -12,12 +12,15 @@ import android.widget.Toast;
 
 import com.example.pengllrn.publishcertificate.R;
 import com.example.pengllrn.publishcertificate.base.BaseNfcActivity;
+import com.example.pengllrn.publishcertificate.bean.Tagg;
 import com.example.pengllrn.publishcertificate.constant.Constant;
 import com.example.pengllrn.publishcertificate.gson.ParseJson;
 import com.example.pengllrn.publishcertificate.internet.OkHttp;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
@@ -28,8 +31,10 @@ public class Activity1 extends BaseNfcActivity {
     private String temp = "";   //保存状态位
     private String uid_zouyun = ""; //保存uid
     private String applyUrl = Constant.URL_ADD_TAG;
+    private String applyUrl2 = Constant.URL_CHECK_IN_STORAGE;
     private ParseJson mParseJson = new ParseJson();
-    private EditText outStorageDateEt;
+    private String outStorageTime;
+    private boolean isinStorageTimeExist = false;
 
     Handler mHandler = new Handler() {
         @Override
@@ -50,8 +55,48 @@ public class Activity1 extends BaseNfcActivity {
                         Toast.makeText(Activity1.this,"出库失败",Toast.LENGTH_SHORT).show();
                     }
                     break;
+                case 0x2018:
+                    try {
+                        String responsedata = (msg.obj).toString();
+                        int status = mParseJson.Json2TaggServer(responsedata).getStatus();
+                        if (status == 0) {
+                            String date_in_storage = mParseJson.Json2TaggServer(responsedata).getTagg().getDate_in_storage();
+                            String in_storage = mParseJson.Json2TaggServer(responsedata).getTagg().getIn_storage();
+                            if (date_in_storage.equals("")) {
+                                Toast.makeText(Activity1.this,"该物品尚未入库，请先进行入库操作",Toast.LENGTH_SHORT).show();
+                                uid_zouyun = "";
+                                certificate1 = "";
+                            } else if (in_storage.equals("0")){
+                                Toast.makeText(Activity1.this,"该物品已出库",Toast.LENGTH_SHORT).show();
+                                uid_zouyun = "";
+                                certificate1 = "";
+                            } else {
+                                sendtoServer();
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(Activity1.this,"出库失败",Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case 0x2020:
+                    try {
+                        String responsedata = (msg.obj).toString();
+                        List<Tagg> listtaginstorage = mParseJson.TaggPoint(responsedata);
+                        if (listtaginstorage.size() == 0) {
+                            Toast.makeText(Activity1.this,"库中已空，请进行入库操作",Toast.LENGTH_SHORT).show();
+                            uid_zouyun = "";
+                            certificate1 = "";
+                        } else {
+                            sendtoServer2();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 case 0x22:
-                    Toast.makeText(Activity1.this,"NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Activity1.this,"网络延迟",Toast.LENGTH_SHORT).show();
+                    break;
             }
             super.handleMessage(msg);
         }
@@ -61,7 +106,6 @@ public class Activity1 extends BaseNfcActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_1);
-        outStorageDateEt = (EditText) findViewById(R.id.et_date);
     }
 
     @Override
@@ -87,8 +131,11 @@ public class Activity1 extends BaseNfcActivity {
         }
         certificate1 = readCertiInTag(detectedTag);
         analysisTag(detectedTag);
-        System.out.println("证书：" + certificate1 + "     " + "uid: " + uid_zouyun);
-        sendtoServer();
+        Calendar calendar = Calendar.getInstance();
+        outStorageTime = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-"
+                + calendar.get(Calendar.DAY_OF_MONTH);
+        System.out.println("证书：" + certificate1 + "     " + "uid: " + uid_zouyun + " " + "出库时间：" + outStorageTime);
+        sendtoServer3();
     }
 
 
@@ -290,19 +337,33 @@ public class Activity1 extends BaseNfcActivity {
     }
 
     public void sendtoServer() {
-        if ((certificate1.length() == 8) && (uid_zouyun.length() == 14) && ((outStorageDateEt.getText().toString()).length() == 10)) {
+        if ((certificate1.length() == 8) && (uid_zouyun.length() == 14)) {
             OkHttp okHttp = new OkHttp(getApplicationContext(),mHandler);
             RequestBody requestBody = new FormBody.Builder()
                     .add("uid",uid_zouyun)
                     .add("certificate",certificate1)
                     .add("in_storage",Constant.OUTSTORAGE)
-                    .add("date_out_storage",outStorageDateEt.getText().toString())
+                    .add("date_out_storage",outStorageTime)
                     .build();
             okHttp.postFromInternet(applyUrl,requestBody);
         } else {
-            Toast.makeText(this,"请填入正确的年月日格式",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"uid或者证书格式不正确",Toast.LENGTH_SHORT).show();
         }
         uid_zouyun = "";
         certificate1 = "";
+    }
+    public void sendtoServer2() {
+        if ((certificate1.length() == 8) && (uid_zouyun.length() == 14)) {
+            OkHttp okHttp = new OkHttp(getApplicationContext(),mHandler);
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("uid",uid_zouyun)
+                    .add("certificate",certificate1)
+                    .build();
+            okHttp.postFromInternet2(applyUrl,requestBody);
+        }
+    }
+    public void sendtoServer3() {
+        OkHttp okHttp = new OkHttp(getApplicationContext(),mHandler);
+        okHttp.getFromInternet(applyUrl2);
     }
 }

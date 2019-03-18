@@ -21,7 +21,7 @@ import com.example.pengllrn.publishcertificate.base.BaseNfcActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseNfcActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     /**
@@ -31,6 +31,7 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
     private ImageView imageView2;   //入库
     private ImageView imageView3;   //盘库
     private ImageView imageView4;   //出入库时间记录
+    private ImageView imageView5;   //所有物品出入库时间记录
 
 
     private Intent intent;
@@ -67,6 +68,7 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         imageView2 = (ImageView) findViewById(R.id.img2);
         imageView3 = (ImageView) findViewById(R.id.img3);
         imageView4 = (ImageView) findViewById(R.id.img4);
+        imageView5 = (ImageView) findViewById(R.id.img5);
     }
 
     /**
@@ -78,6 +80,7 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
         imageView2.setOnClickListener(this);
         imageView3.setOnClickListener(this);
         imageView4.setOnClickListener(this);
+        imageView5.setOnClickListener(this);
     }
 
     @Override
@@ -97,6 +100,10 @@ public class MainActivity extends BaseNfcActivity implements View.OnClickListene
                 break;
             case R.id.img4:
                 intent = new Intent(MainActivity.this, Activity4.class);
+                startActivity(intent);
+                break;
+            case R.id.img5:
+                intent = new Intent(MainActivity.this, Activity5.class);
                 startActivity(intent);
             default:
                 break;

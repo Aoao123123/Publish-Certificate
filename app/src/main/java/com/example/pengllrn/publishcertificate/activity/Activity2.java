@@ -21,6 +21,7 @@ import com.example.pengllrn.publishcertificate.internet.OkHttp;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
 
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
@@ -32,7 +33,7 @@ public class Activity2 extends BaseNfcActivity {
     private String uid_zouyun = ""; //保存uid
     private String applyUrl = Constant.URL_ADD_TAG;
     private ParseJson mParseJson = new ParseJson();
-    private EditText inStorageDateEt;
+    private String inStorageTime;
 
     Handler mHandler = new Handler() {
         @Override
@@ -53,8 +54,28 @@ public class Activity2 extends BaseNfcActivity {
                         Toast.makeText(Activity2.this,"入库失败",Toast.LENGTH_SHORT).show();
                     }
                     break;
+                case 0x2018:
+                    try {
+                        String reponsedata = (msg.obj).toString();
+                        int status = mParseJson.Json2TaggServer(reponsedata).getStatus();
+                        if (status == 0) {
+                            String in_storage = mParseJson.Json2TaggServer(reponsedata).getTagg().getIn_storage();
+                            if (in_storage.equals("1")) {
+                                Toast.makeText(Activity2.this,"该物品已入库",Toast.LENGTH_SHORT).show();
+                                uid_zouyun = "";
+                                certificate1 = "";
+                            } else {
+                                sendtoServer();
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(Activity2.this,"入库失败",Toast.LENGTH_SHORT).show();
+                    }
+                    break;
                 case 0x22:
-                    Toast.makeText(Activity2.this,"NFC标签未探测成功，请将标签靠近手机NFC检测区域再次探测",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Activity2.this,"网络延迟",Toast.LENGTH_SHORT).show();
+                    break;
             }
             super.handleMessage(msg);
         }
@@ -64,7 +85,6 @@ public class Activity2 extends BaseNfcActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_2);
-        inStorageDateEt = (EditText) findViewById(R.id.et_date);
     }
 
     @Override
@@ -91,8 +111,11 @@ public class Activity2 extends BaseNfcActivity {
         }
         certificate1 = readCertiInTag(detectedTag);
         analysisTag(detectedTag);
-        System.out.println("证书：" + certificate1 + "     " + "uid: " + uid_zouyun);
-        sendtoServer();
+        Calendar calendar = Calendar.getInstance();
+        inStorageTime = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-"
+                + calendar.get(Calendar.DAY_OF_MONTH);
+        System.out.println("证书：" + certificate1 + "     " + "uid: " + uid_zouyun + " " + "入库时间：" + inStorageTime);
+        sendtoServer2();
     }
 
 
@@ -294,19 +317,28 @@ public class Activity2 extends BaseNfcActivity {
     }
 
     public void sendtoServer() {
-        if ((certificate1.length() == 8) && (uid_zouyun.length() == 14) && ((inStorageDateEt.getText().toString()).length() == 10)) {
+        if ((certificate1.length() == 8) && (uid_zouyun.length() == 14)) {
             OkHttp okHttp = new OkHttp(getApplicationContext(),mHandler);
             RequestBody requestBody = new FormBody.Builder()
                     .add("uid",uid_zouyun)
                     .add("certificate",certificate1)
                     .add("in_storage",Constant.INSTORAGE)
-                    .add("date_in_storage",inStorageDateEt.getText().toString())
+                    .add("date_in_storage",inStorageTime)
                     .build();
             okHttp.postFromInternet(applyUrl,requestBody);
         } else {
-            Toast.makeText(this,"请填入正确的年月日格式",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"uid或证书格式不正确",Toast.LENGTH_SHORT).show();
         }
         uid_zouyun = "";
         certificate1 = "";
+    }
+
+    public void sendtoServer2() {
+        OkHttp okHttp = new OkHttp(getApplicationContext(),mHandler);
+        RequestBody requestBody = new FormBody.Builder()
+                .add("uid",uid_zouyun)
+                .add("certificate",certificate1)
+                .build();
+        okHttp.postFromInternet2(applyUrl,requestBody);
     }
 }
